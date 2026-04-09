@@ -24,8 +24,8 @@ export default async function Home() {
       </div>
       
       <footer className="py-12 bg-gray-50 text-center text-gray-400 text-sm">
-        <p className="font-serif italic text-base mb-2">"Onde quer que estejas, é lá que eu estarei."</p>
-        <p>© 2025 Lucas & Amanda — Convite de Casamento</p>
+        <p className="font-serif italic text-base mb-2">"Que a tua vida não seja uma vida estéril" - São José Maria Escrivá</p>
+        <p>© 2025 Lucas & Amanda</p>
       </footer>
     </main>
   );

@@ -108,7 +108,7 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
               </p>
               <p className="font-sans-body text-sm text-muted-foreground leading-relaxed">
                 Seu(s) terço(s) foram registrados com carinho. Lucas e Amanda 
-                rezarão por suas intenções diariamente até o dia do Sacramento.
+                rezarão por suas intenções diariamente até a chegada do grande dia.
               </p>
               <button 
                 onClick={handleClose} 
