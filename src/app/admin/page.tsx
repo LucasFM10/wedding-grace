@@ -1,4 +1,5 @@
 import { getAllOfferings, signOut, toggleSeenStatus } from "../actions";
+import ToggleButton from "@/components/admin/ToggleButton";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -60,28 +61,40 @@ export default async function AdminPage() {
                 <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase">Devoto</th>
                 <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase">Qtd</th>
                 <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase">Intenção</th>
+                <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase text-center">Foto</th>
                 <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase">Data</th>
                 <th className="px-6 py-4 text-[10px] tracking-widest font-bold text-gray-400 uppercase text-center">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {offerings.map((offering) => (
-                <tr key={offering.id} className={`transition-colors ${offering.vista ? 'bg-gray-50/50 opacity-60' : 'bg-white'}`}>
+                <tr key={offering.id} className={`transition-all duration-500 ${offering.vista ? 'bg-gray-50/50 opacity-60' : 'bg-white'}`}>
                   <td className="px-6 py-6 font-semibold text-gray-700">{offering.nome_devoto}</td>
                   <td className="px-6 py-6 font-serif text-lg text-gold-dark">{offering.quantidade}</td>
                   <td className="px-6 py-6 text-sm text-gray-500 italic max-w-xs">{offering.intencao || "—"}</td>
+                  <td className="px-6 py-6 text-center">
+                    {offering.foto_url ? (
+                      <a 
+                        href={offering.foto_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-block rounded-lg overflow-hidden border border-gray-100 hover:border-gold-light transition-all hover:scale-110"
+                      >
+                        <img 
+                          src={offering.foto_url} 
+                          alt="Anexo" 
+                          className="w-10 h-10 object-cover"
+                        />
+                      </a>
+                    ) : (
+                      <span className="text-gray-300">—</span>
+                    )}
+                  </td>
                   <td className="px-6 py-6 text-xs text-gray-400">
                     {new Date(offering.created_at).toLocaleDateString('pt-BR')}
                   </td>
-                  <td className="px-6 py-6 text-center">
-                    <form action={async () => {
-                      "use server";
-                      await toggleSeenStatus(offering.id, offering.vista);
-                    }}>
-                      <button className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${offering.vista ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
-                        {offering.vista ? '✓' : '○'}
-                      </button>
-                    </form>
+                  <td className="px-6 py-6 flex justify-center">
+                    <ToggleButton id={offering.id} initialStatus={offering.vista} />
                   </td>
                 </tr>
               ))}

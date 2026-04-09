@@ -1,37 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import { X, Minus, Plus, Heart, Loader2 } from "lucide-react";
+import { useState, useRef, ChangeEvent } from "react";
+import { X, Minus, Plus, Heart, Loader2, Camera, Trash2 } from "lucide-react";
 import { registerOffering } from "@/app/actions";
 
 interface PrayerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // O onSubmit agora é interno via Server Action, mas mantemos o hook para feedback visual se necessário
 }
 
 const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [intentions, setIntentions] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [success, setSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("A foto deve ser menor que 5MB");
+        return;
+      }
+      setPhoto(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleSubmit = async () => {
     setIsPending(true);
     
-    const result = await registerOffering({
-      nomeDevoto: name,
-      quantidade: quantity,
-      intencao: intentions,
-    });
+    // Usamos FormData para suportar o envio de arquivos
+    const formData = new FormData();
+    formData.append("nomeDevoto", name);
+    formData.append("quantidade", quantity.toString());
+    formData.append("intencao", intentions);
+    if (photo) {
+      formData.append("foto", photo);
+    }
+
+    const result = await registerOffering(formData);
 
     setIsPending(false);
 
     if (result.success) {
       setSuccess(true);
     } else {
-      // Aqui poderíamos adicionar um toast de erro
       alert("Houve um erro ao registrar sua oferta. Por favor, tente novamente.");
     }
   };
@@ -40,6 +68,8 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
     setName("");
     setQuantity(1);
     setIntentions("");
+    setPhoto(null);
+    setPhotoPreview(null);
     setSuccess(false);
     onClose();
   };
@@ -92,7 +122,7 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
               {/* Name */}
               <div>
                 <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
-                  Seu Nome <span className="text-muted-foreground font-normal">(opcional, para ofertas anônimas)</span>
+                  Seu Nome <span className="text-muted-foreground font-normal">(opcional)</span>
                 </label>
                 <input
                   type="text"
@@ -106,7 +136,7 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
 
               {/* Quantity stepper */}
               <div>
-                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
+                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5 text-center">
                   Quantidade de Terços
                 </label>
                 <div className="flex items-center justify-center gap-4">
@@ -139,12 +169,56 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
                   value={intentions}
                   onChange={(e) => setIntentions(e.target.value)}
                   placeholder="Escreva aqui suas intenções..."
-                  rows={4}
+                  rows={3}
                   disabled={isPending}
                   className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:opacity-50"
                 />
-                <p className="font-sans-body text-xs text-muted-foreground mt-1.5 italic">
-                  O casal intercederá por suas intenções diariamente em suas orações.
+              </div>
+
+              {/* Photo Upload */}
+              <div>
+                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
+                  Anexar Foto <span className="text-muted-foreground font-normal">(opcional)</span>
+                </label>
+                
+                {!photoPreview ? (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isPending}
+                    className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-border rounded-lg hover:border-gold hover:bg-gold/5 transition-all text-muted-foreground disabled:opacity-50"
+                  >
+                    <Camera className="w-6 h-6" />
+                    <span className="text-xs uppercase tracking-widest font-semibold">Adicionar Foto</span>
+                  </button>
+                ) : (
+                  <div className="relative rounded-lg overflow-hidden border border-border group">
+                    <img 
+                      src={photoPreview} 
+                      alt="Preview" 
+                      className="w-full h-40 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={removePhoto}
+                        className="bg-white text-red-500 p-2 rounded-full shadow-lg transform scale-90 group-hover:scale-100 transition-transform"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handlePhotoChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <p className="text-[10px] text-muted-foreground mt-2 italic text-center uppercase tracking-widest">
+                  Compartilhe um momento especial conosco.
                 </p>
               </div>
 

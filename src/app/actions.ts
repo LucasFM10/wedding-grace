@@ -10,26 +10,53 @@ import { cookies } from "next/headers";
  * Agora os dados são salvos permanentemente no banco centralizado.
  */
 
-export async function registerOffering(formData: {
-  nomeDevoto?: string;
-  quantidade: number;
-  intencao?: string;
-}) {
+export async function registerOffering(formData: FormData) {
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 
+  const nomeDevoto = formData.get("nomeDevoto") as string;
+  const quantidade = parseInt(formData.get("quantidade") as string) || 1;
+  const intencao = formData.get("intencao") as string;
+  const file = formData.get("foto") as File | null;
+
   try {
+    let foto_url = null;
+
+    // Lógica de Upload de Foto
+    if (file && file.size > 0) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).slice(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload para o bucket 'fotos-tercos'
+      const { error: uploadError } = await supabase.storage
+        .from('fotos-tercos')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Erro no upload do Storage:", uploadError);
+      } else {
+        // Pega a URL pública
+        const { data: { publicUrl } } = supabase.storage
+          .from('fotos-tercos')
+          .getPublicUrl(filePath);
+          
+        foto_url = publicUrl;
+      }
+    }
+
     const { error } = await supabase.from("tercos").insert([
       {
-        nome_devoto: formData.nomeDevoto || "Anônimo",
-        quantidade: formData.quantidade,
-        intencao: formData.intencao || "",
+        nome_devoto: nomeDevoto || "Anônimo",
+        quantidade: quantidade,
+        intencao: intencao || "",
+        foto_url: foto_url,
       },
     ]);
 
     if (error) throw error;
 
-    console.log("Supabase: Oferta registrada com sucesso!", formData);
+    console.log("Supabase: Oferta registrada com sucesso com foto!", { nomeDevoto, foto_url });
     
     // Revalida a página para atualizar o contador
     revalidatePath("/");
