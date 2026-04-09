@@ -56,7 +56,7 @@ export async function getTotalOfferings() {
     if (error) throw error;
 
     // Soma as quantidades (começando com 450 como base "histórica" mockada antes)
-    const baseCount = 450;
+    const baseCount = 0;
     const dbTotal = data.reduce((acc, curr) => acc + (curr.quantidade || 0), 0);
 
     return baseCount + dbTotal;
