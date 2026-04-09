@@ -2,6 +2,8 @@ import HeroCarousel from "@/components/HeroCarousel";
 import SpiritualBouquet from "@/components/SpiritualBouquet";
 import { getTotalOfferings } from "@/app/actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   // Busca o total oficial diretamente do banco no servidor
   const initialTotal = await getTotalOfferings();
