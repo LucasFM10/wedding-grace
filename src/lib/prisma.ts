@@ -1,41 +1,32 @@
 import { PrismaClient } from "@prisma/client";
 
 /**
- * Padrão Singleton para o PrismaClient.
- * Em Prisma 7, a inicialização automática falha se a DATABASE_URL estiver vazia.
- * Durante o build do Vercel, a URL muitas vezes não está presente, o que causa o crash.
+ * Padrão Singleton com Proxy para Inicialização Lazy (Preguiçosa).
+ * O PrismaClient só será instanciado na PRIMEIRA vez que um método for chamado.
+ * Isso evita que o build do Vercel falhe ao importar este módulo, pois a 
+ * DATABASE_URL só é necessária no momento da execução da query, não na criação do objeto Proxy.
  */
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
 const prismaClientSingleton = () => {
   return new PrismaClient();
 };
 
-type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientSingleton | undefined;
-};
-
-// Se estivermos em tempo de build (onde o banco geralmente não é necessário), 
-// podemos atrasar ou proteger a inicialização.
-const getPrisma = () => {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
-  }
-
-  // Tenta instanciar. Se falhar por falta de URL em tempo de build, 
-  // o erro será capturado onde a função for chamada.
-  const client = prismaClientSingleton();
-  
-  if (process.env.NODE_ENV !== "production") {
-    globalForPrisma.prisma = client;
-  }
-  
-  return client;
-};
-
-const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+const prisma = new Proxy({} as PrismaClient, {
+  get: (target, prop) => {
+    // Se a instância global ainda não existe, cria agora (no momento do acesso)
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = prismaClientSingleton();
+    }
+    
+    // Retorna a propriedade solicitada da instância real
+    return (globalForPrisma.prisma as any)[prop];
+  },
+});
 
 export default prisma;
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = undefined; // Força re-instalação se necessário em dev

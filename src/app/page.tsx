@@ -5,8 +5,13 @@ import { getTotalOfferings } from "@/app/actions";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  // Busca o total oficial diretamente do banco no servidor
-  const initialTotal = await getTotalOfferings();
+  // Busca o total oficial diretamente do banco no servidor com fallback para 0 se falhar
+  let initialTotal = 0;
+  try {
+    initialTotal = await getTotalOfferings();
+  } catch (error) {
+    console.error("Falha ao buscar total inicial:", error);
+  }
 
   return (
     <main className="min-h-screen">
