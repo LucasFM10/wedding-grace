@@ -1,9 +1,15 @@
-import { useState, useEffect } from "react";
-import couple1 from "@/assets/couple-1.jpg";
-import couple2 from "@/assets/couple-2.jpg";
-import couple3 from "@/assets/couple-3.jpg";
+"use client";
 
-const images = [couple1, couple2, couple3];
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Countdown from "./Countdown";
+
+// No Next.js, referenciamos imagens na pasta public com caminhos relativos
+const images = [
+  "/assets/couple-1.jpg",
+  "/assets/couple-2.jpg",
+  "/assets/couple-3.jpg",
+];
 
 const HeroCarousel = () => {
   const [current, setCurrent] = useState(0);
@@ -18,16 +24,20 @@ const HeroCarousel = () => {
   return (
     <section className="relative w-full h-screen min-h-[600px] max-h-[900px] overflow-hidden">
       {images.map((src, i) => (
-        <img
+        <div 
           key={i}
-          src={src}
-          alt={`Lucas e sua noiva - foto ${i + 1}`}
-          width={1920}
-          height={1080}
-          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-[2000ms] ease-in-out"
+          className="absolute inset-0 w-full h-full transition-opacity duration-[2000ms] ease-in-out"
           style={{ opacity: current === i ? 1 : 0 }}
-          {...(i === 0 ? {} : { loading: "lazy" as const })}
-        />
+        >
+          <Image
+            src={src}
+            alt={`Lucas e Amanda - foto ${i + 1}`}
+            fill
+            className="object-cover"
+            priority={i === 0}
+            sizes="100vw"
+          />
+        </div>
       ))}
 
       {/* Overlay */}
@@ -36,17 +46,21 @@ const HeroCarousel = () => {
       {/* Content */}
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
         <p className="font-sans-body text-sm tracking-[0.3em] uppercase text-gold-light animate-float-up mb-4">
-          Celebração do Sacramento do Matrimônio
+          contando os dias para o começo de nossa família
         </p>
 
         <h1 className="font-serif-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light tracking-wide mb-2 animate-float-up" style={{ color: 'hsl(40, 60%, 90%)' }}>
-          Lucas <span className="text-gold-light font-light">&</span> Noiva
+          Lucas <span className="text-gold-light font-light">&</span> Amanda
         </h1>
 
         <div className="gold-divider w-32 md:w-48 my-6 animate-float-up-delay" />
 
+        <div className="mb-6 animate-float-up-delay">
+          <Countdown targetDate="2027-01-09T00:00:00" />
+        </div>
+
         <p className="font-sans-body text-base md:text-lg tracking-widest uppercase animate-float-up-delay" style={{ color: 'hsl(210, 30%, 85%)' }}>
-          15 de Novembro de 2025 · João Pessoa — PB
+          09 de Janeiro de 2027 · João Pessoa — PB
         </p>
 
         <div className="mt-8 animate-float-up-delay-2">

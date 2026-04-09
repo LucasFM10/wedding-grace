@@ -1,16 +1,25 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import PrayerModal from "./PrayerModal";
 
 const GOAL = 1830;
 
-const SpiritualBouquet = () => {
-  const [offered, setOffered] = useState(45);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const percentage = Math.min((offered / GOAL) * 100, 100);
+interface SpiritualBouquetProps {
+  initialTotal: number;
+}
 
-  const handleSubmit = (quantity: number) => {
-    setOffered((prev) => Math.min(prev + quantity, GOAL));
-  };
+const SpiritualBouquet = ({ initialTotal }: SpiritualBouquetProps) => {
+  // Sincronizamos o estado local com o prop vindo do servidor
+  const [offered, setOffered] = useState(initialTotal);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Atualiza o estado local quando os props mudam (revalidação do servidor)
+  useEffect(() => {
+    setOffered(initialTotal);
+  }, [initialTotal]);
+
+  const percentage = Math.min((offered / GOAL) * 100, 100);
 
   return (
     <>
@@ -18,14 +27,14 @@ const SpiritualBouquet = () => {
         <div className="max-w-2xl mx-auto text-center">
           {/* Title */}
           <p className="font-sans-body text-sm tracking-[0.25em] uppercase text-gold mb-3">
-            Buquê Espiritual
+            "Espero tudo do Bom Deus, como uma criancinha espera tudo de seu pai"
           </p>
           <h2 className="font-serif-display text-3xl md:text-4xl lg:text-5xl font-light text-marian-deep mb-3">
             Corrente de Oração
           </h2>
           <p className="font-sans-body text-muted-foreground text-sm md:text-base mb-10 max-w-md mx-auto leading-relaxed">
-            Ofereça um Terço do Rosário e ajude a tecer, com suas Ave-Marias, 
-            o manto de graças para o nosso Sacramento.
+            Ofereça um Terço do Rosário e ajude a construir, com suas orações, 
+            a fundação necessária para uma vida matrimonial abençoada.
           </p>
 
           {/* Progress circle */}
@@ -40,7 +49,7 @@ const SpiritualBouquet = () => {
               <circle
                 cx="100" cy="100" r="88"
                 fill="none"
-                stroke="url(#progressGradient)"
+                stroke="url(#progressGradientData)"
                 strokeWidth="10"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 88}`}
@@ -48,7 +57,7 @@ const SpiritualBouquet = () => {
                 className="transition-all duration-1000 ease-out"
               />
               <defs>
-                <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient id="progressGradientData" x1="0%" y1="0%" x2="100%" y2="0%">
                   <stop offset="0%" stopColor="hsl(215, 50%, 40%)" />
                   <stop offset="50%" stopColor="hsl(210, 60%, 68%)" />
                   <stop offset="100%" stopColor="hsl(40, 60%, 55%)" />
@@ -71,7 +80,7 @@ const SpiritualBouquet = () => {
             onClick={() => setIsModalOpen(true)}
             className="btn-cta font-sans-body text-base md:text-lg"
           >
-            🙏 Oferecer um Terço
+            Oferecer um Terço
           </button>
         </div>
       </section>
@@ -79,7 +88,6 @@ const SpiritualBouquet = () => {
       <PrayerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
       />
     </>
   );

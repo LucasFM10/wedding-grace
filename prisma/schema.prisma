@@ -1,0 +1,23 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // NOTA: Para ambientes serverless (Vercel), utilize o sufixo ?pgbouncer=true 
+  // na string de conexão para gerenciar corretamente o pool de conexões no Migrations (prisma.config.ts).
+}
+
+model TercoOferecido {
+  id              String   @id @default(uuid())
+  nomeDevoto      String?
+  quantidade      Int      @default(1)
+  intencao        String?
+  rezadoPeloCasal Boolean  @default(false)
+  dataOferta      DateTime @default(now())
+
+  @@map("tercos_oferecidos")
+}

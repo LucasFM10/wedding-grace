@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment & Prisma
+.env
+.env.*
+prisma/*.db
+prisma/*.db-journal
+/src/generated/prisma
+
+# Next.js
+.next/
+next-env.d.ts

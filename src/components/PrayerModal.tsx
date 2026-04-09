@@ -1,21 +1,39 @@
+"use client";
+
 import { useState } from "react";
-import { X, Minus, Plus, Heart } from "lucide-react";
+import { X, Minus, Plus, Heart, Loader2 } from "lucide-react";
+import { registerOffering } from "@/app/actions";
 
 interface PrayerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (quantity: number) => void;
+  // O onSubmit agora é interno via Server Action, mas mantemos o hook para feedback visual se necessário
 }
 
-const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
+const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [intentions, setIntentions] = useState("");
+  const [isPending, setIsPending] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = () => {
-    onSubmit(quantity);
-    setSuccess(true);
+  const handleSubmit = async () => {
+    setIsPending(true);
+    
+    const result = await registerOffering({
+      nomeDevoto: name,
+      quantidade: quantity,
+      intencao: intentions,
+    });
+
+    setIsPending(false);
+
+    if (result.success) {
+      setSuccess(true);
+    } else {
+      // Aqui poderíamos adicionar um toast de erro
+      alert("Houve um erro ao registrar sua oferta. Por favor, tente novamente.");
+    }
   };
 
   const handleClose = () => {
@@ -53,13 +71,19 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
                 <Heart className="w-8 h-8 text-gold" />
               </div>
               <p className="font-serif-display text-xl text-marian-deep mb-2">
-                Que Nossa Senhora interceda por você!
+                "Um amigo fiel é uma poderosa proteção: quem o achou, descobriu um tesouro."
+              </p>
+              <p className="font-sans-body text-xs text-gold uppercase tracking-[0.2em] mb-4">
+                — Eclesiástico 6,14
               </p>
               <p className="font-sans-body text-sm text-muted-foreground leading-relaxed">
-                Seu(s) terço(s) foram registrados com carinho. Lucas e sua noiva 
+                Seu(s) terço(s) foram registrados com carinho. Lucas e Amanda 
                 rezarão por suas intenções diariamente até o dia do Sacramento.
               </p>
-              <button onClick={handleClose} className="btn-submit mt-6 font-sans-body">
+              <button 
+                onClick={handleClose} 
+                className="btn-submit mt-6 font-sans-body"
+              >
                 Fechar
               </button>
             </div>
@@ -75,7 +99,8 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Maria das Graças"
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                  disabled={isPending}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:opacity-50"
                 />
               </div>
 
@@ -87,7 +112,8 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    disabled={isPending}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -96,7 +122,8 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
                   </span>
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    disabled={isPending}
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -113,7 +140,8 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
                   onChange={(e) => setIntentions(e.target.value)}
                   placeholder="Escreva aqui suas intenções..."
                   rows={4}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                  disabled={isPending}
+                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:opacity-50"
                 />
                 <p className="font-sans-body text-xs text-muted-foreground mt-1.5 italic">
                   O casal intercederá por suas intenções diariamente em suas orações.
@@ -121,8 +149,13 @@ const PrayerModal = ({ isOpen, onClose, onSubmit }: PrayerModalProps) => {
               </div>
 
               {/* Submit */}
-              <button onClick={handleSubmit} className="btn-submit w-full font-sans-body text-base">
-                Enviar Intenção
+              <button 
+                onClick={handleSubmit} 
+                disabled={isPending}
+                className="btn-submit w-full font-sans-body text-base flex items-center justify-center gap-2"
+              >
+                {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+                {isPending ? "Registrando..." : "Enviar Intenção"}
               </button>
             </div>
           )}
