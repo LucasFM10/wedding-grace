@@ -25,7 +25,7 @@ export default async function Home() {
       
       <footer className="py-12 bg-gray-50 text-center text-gray-400 text-sm">
         <p className="font-serif italic text-base mb-2">"Que a tua vida não seja uma vida estéril" - São José Maria Escrivá</p>
-        <p>© 2025 Lucas & Amanda</p>
+        <p>© 2026 Lucas & Amanda</p>
       </footer>
     </main>
   );
