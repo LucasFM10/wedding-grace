@@ -16,11 +16,11 @@ const lato = Lato({
 
 export const metadata: Metadata = {
   title: "Lucas & Amanda — Casamento Católico",
-  description: "Celebração do Sacramento do Matrimônio de Lucas e Amanda. Ofereça um terço e participe do nosso buquê espiritual.",
+  description: "Celebração do Sacramento do Matrimônio de Lucas e Amanda. Ofereça um terço e participe do nosso ElevadorParaDois.",
   authors: [{ name: "Lucas & Amanda" }],
   openGraph: {
     title: "Lucas & Amanda — Casamento Católico",
-    description: "Celebração do Sacramento do Matrimônio. Ofereça um terço e participe do nosso buquê espiritual.",
+    description: "Celebração do Sacramento do Matrimônio. Ofereça um terço e participe do nosso ElevadorParaDois.",
     type: "website",
   },
   twitter: {

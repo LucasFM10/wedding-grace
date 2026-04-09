@@ -1,11 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 
 /**
- * Persistência Real com Supabase para o Buquê Espiritual.
+ * Persistência Real com Supabase para o ElevadorParaDois.
  * Agora os dados são salvos permanentemente no banco centralizado.
  */
 
@@ -64,4 +65,69 @@ export async function getTotalOfferings() {
     console.error("Erro ao buscar total no Supabase:", error);
     return 450; // Fallback para o valor base se o banco der erro
   }
+}
+
+// --- AÇÕES DE AUTENTICAÇÃO ---
+
+export async function signIn(formData: FormData) {
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    return redirect("/login?error=Credenciais inválidas");
+  }
+
+  revalidatePath("/admin", "layout");
+  redirect("/admin");
+}
+
+export async function signOut() {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
+// --- AÇÕES ADMINISTRATIVAS ---
+
+export async function getAllOfferings() {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { data, error } = await supabase
+    .from("tercos")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Erro ao listar intenções:", error);
+    return [];
+  }
+
+  return data;
+}
+
+export async function toggleSeenStatus(id: string, currentStatus: boolean) {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from("tercos")
+    .update({ vista: !currentStatus })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Erro ao atualizar status:", error);
+    return { success: false };
+  }
+
+  revalidatePath("/admin");
+  return { success: true };
 }
