@@ -10,9 +10,11 @@ Site para celebração do Sacramento do Matrimônio de Lucas e Amanda.
 
 ## Tecnologias
 
-- React + Vite
+- Next.js
+- React
 - Tailwind CSS
-- Prisma (PostgreSQL)
+- Supabase (PostgreSQL)
+- shadcn/ui
 
 ## Desenvolvimento
 
