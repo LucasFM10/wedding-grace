@@ -82,12 +82,12 @@ const SpiritualBouquet = ({ initialTotal }: SpiritualBouquetProps) => {
 
             {/* Content inside the circle */}
             <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-              <span className="font-serif-display text-7xl md:text-8xl font-bold text-marian-deep tracking-tighter drop-shadow-sm">
+              <span className="font-serif-display text-7xl md:text-8xl font-bold text-marian-deep tracking-tighter drop-shadow-sm leading-none">
                 {offered}
               </span>
-              <div className="flex flex-col items-center -mt-2">
+              <div className="flex flex-col items-center mt-2 md:mt-3">
                 <div className="h-[1px] w-12 bg-gold/30 mb-2" />
-                <span className="font-sans-body text-xs md:text-sm text-muted-foreground uppercase tracking-[0.3em]">de {GOAL}</span>
+                <span className="font-sans-body text-xs md:text-sm text-muted-foreground uppercase tracking-[0.3em] leading-none">de {GOAL}</span>
                 <span className="font-serif-display text-xl md:text-2xl text-gold italic mt-2 font-medium">Terços Oferecidos</span>
               </div>
             </div>

@@ -118,11 +118,11 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
               </button>
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-6">
               {/* Name */}
               <div>
-                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
-                  Seu Nome <span className="text-muted-foreground font-normal">(opcional)</span>
+                <label className="font-sans-body text-sm font-medium text-marian-deep/90 block mb-1.5">
+                  Seu Nome
                 </label>
                 <input
                   type="text"
@@ -130,20 +130,20 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Maria das Graças"
                   disabled={isPending}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:opacity-50"
+                  className="w-full px-4 py-3 rounded-lg border border-border/80 bg-background/30 font-sans-body text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all duration-300 disabled:opacity-50 placeholder:text-muted-foreground/60"
                 />
               </div>
 
               {/* Quantity stepper */}
               <div>
-                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5 text-center">
+                <label className="font-sans-body text-sm font-medium text-marian-deep/90 block mb-2 text-center">
                   Quantidade de Terços
                 </label>
                 <div className="flex items-center justify-center gap-4">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={isPending}
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                    className="w-10 h-10 rounded-full border border-border/80 flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300 disabled:opacity-50 bg-background/10 hover:bg-white"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -153,7 +153,7 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
                     disabled={isPending}
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors disabled:opacity-50"
+                    className="w-10 h-10 rounded-full border border-border/80 flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-all duration-300 disabled:opacity-50 bg-background/10 hover:bg-white"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -162,23 +162,26 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
 
               {/* Intentions */}
               <div>
-                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
+                <label className="font-sans-body text-sm font-medium text-marian-deep/90 block mb-1">
                   Suas Intenções de Oração
                 </label>
+                <p className="font-sans-body text-xs text-muted-foreground mb-2 leading-relaxed">
+                  Caso você queira, aqui você pode inserir intenções pelas quais você deseja que eu e Amanda rezemos. Por exemplo, pela saúde de um ente querido seu ou pela sua família.
+                </p>
                 <textarea
                   value={intentions}
                   onChange={(e) => setIntentions(e.target.value)}
                   placeholder="Escreva aqui suas intenções..."
                   rows={3}
                   disabled={isPending}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background font-sans-body text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors disabled:opacity-50"
+                  className="w-full px-4 py-3 rounded-lg border border-border/80 bg-background/30 font-sans-body text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all duration-300 disabled:opacity-50 placeholder:text-muted-foreground/60"
                 />
               </div>
 
               {/* Photo Upload */}
               <div>
-                <label className="font-sans-body text-sm font-medium text-foreground block mb-1.5">
-                  Anexar Foto <span className="text-muted-foreground font-normal">(opcional)</span>
+                <label className="font-sans-body text-sm font-medium text-marian-deep/90 block mb-1.5">
+                  Anexar Foto
                 </label>
                 
                 {!photoPreview ? (
@@ -186,13 +189,13 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isPending}
-                    className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-border rounded-lg hover:border-gold hover:bg-gold/5 transition-all text-muted-foreground disabled:opacity-50"
+                    className="w-full flex flex-col items-center justify-center gap-2 py-6 border-2 border-dashed border-border/80 rounded-lg hover:border-gold hover:bg-gold/5 transition-all text-muted-foreground disabled:opacity-50 bg-background/10 hover:bg-white"
                   >
-                    <Camera className="w-6 h-6" />
-                    <span className="text-xs uppercase tracking-widest font-semibold">Adicionar Foto</span>
+                    <Camera className="w-6 h-6 text-muted-foreground/80" />
+                    <span className="text-[10px] uppercase tracking-widest font-semibold">Adicionar Foto</span>
                   </button>
                 ) : (
-                  <div className="relative rounded-lg overflow-hidden border border-border group">
+                  <div className="relative rounded-lg overflow-hidden border border-border/80 group shadow-sm">
                     <img 
                       src={photoPreview} 
                       alt="Preview" 
@@ -217,7 +220,7 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
                   accept="image/*"
                   className="hidden"
                 />
-                <p className="text-[10px] text-muted-foreground mt-2 italic text-center uppercase tracking-widest">
+                <p className="text-[10px] text-muted-foreground/80 mt-2 italic text-center uppercase tracking-widest">
                   Compartilhe um momento especial conosco.
                 </p>
               </div>
@@ -226,10 +229,10 @@ const PrayerModal = ({ isOpen, onClose }: PrayerModalProps) => {
               <button 
                 onClick={handleSubmit} 
                 disabled={isPending}
-                className="btn-submit w-full font-sans-body text-base flex items-center justify-center gap-2"
+                className="btn-submit w-full font-sans-body text-base flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-300"
               >
                 {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                {isPending ? "Registrando..." : "Enviar Intenção"}
+                {isPending ? "Registrando..." : "Enviar Terço"}
               </button>
             </div>
           )}
